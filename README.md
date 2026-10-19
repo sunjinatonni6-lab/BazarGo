@@ -8,8 +8,7 @@ BazarGO is a multi-page e-commerce web application featuring a customer storefro
 - [Tech Stack](#tech-stack)
 - [Key Features](#key-features)
 - [Project Structure](#project-structure)
-- [Firebase Configuration](#firebase-configuration)
-- [Firestore Security Rules](#firestore-security-rules)
+
 
 
 ---
