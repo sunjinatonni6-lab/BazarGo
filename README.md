@@ -1,6 +1,6 @@
 # BazarGO — E-Commerce Web Application
 
-BazarGO is a multi-page e-commerce web application featuring a customer storefront, shopping cart, customer authentication, order management, and an administrative back-office portal[cite: 2, 4, 11].
+BazarGO is a multi-page e-commerce web application featuring a customer storefront, shopping cart, customer authentication, order management, and an administrative back-office portal.
 
 ---
 
@@ -10,8 +10,7 @@ BazarGO is a multi-page e-commerce web application featuring a customer storefro
 - [Project Structure](#project-structure)
 - [Firebase Configuration](#firebase-configuration)
 - [Firestore Security Rules](#firestore-security-rules)
-- [Deployment (Vercel)](#deployment-vercel)
-- [License](#license)
+
 
 ---
 
