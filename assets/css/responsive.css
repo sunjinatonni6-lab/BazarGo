@@ -1,0 +1,60 @@
+
+/* Responsive enhancements: preserve the existing BazarGO visual language */
+html { max-width: 100%; overflow-x: clip; }
+body { min-width: 0; width: 100%; }
+img, video, canvas, svg { max-width: 100%; }
+img { height: auto; }
+input, select, textarea, button { max-width: 100%; font: inherit; }
+button, a, input[type="submit"] { touch-action: manipulation; }
+table { max-width: 100%; }
+:where(.container, .nav-container, .main-container, .content, main, .page-container) { min-width: 0; }
+:where(.product-grid, .products-grid, .products-container, .category-grid) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: clamp(.75rem, 2vw, 1.25rem);
+}
+:where(.product-card, .product-item, .metric-card, .card) { min-width: 0; }
+:where(.product-card img, .product-item img) { max-width: 100%; object-fit: contain; }
+:where(.product-card h2, .product-card h3, .product-title, .product-name) { overflow-wrap: anywhere; }
+:where(form, .form-group, .form-row) { min-width: 0; }
+:where(input, select, textarea) { min-width: 0; }
+:where(.table-responsive, .table-container) { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; }
+@media (max-width: 1024px) {
+  .nav-container { gap: .8rem; flex-wrap: wrap; }
+  .nav-search { flex: 1 1 260px; max-width: none; }
+  .admin-content { padding: 1.5rem; }
+}
+@media (max-width: 768px) {
+  .nav-container { padding: .75rem 1rem; }
+  .nav-search { order: 3; flex-basis: 100%; }
+  .nav-links, .nav-menu, .navbar-nav { flex-wrap: wrap; gap: .5rem; }
+  .admin-sidebar { width: 100%; position: static; padding: 1rem; }
+  body:has(.admin-sidebar) { display: flex; flex-direction: column; }
+  .admin-nav { flex-direction: row; flex-wrap: wrap; }
+  .admin-nav a { padding: .6rem .75rem; }
+  .admin-content { padding: 1rem; width: 100%; }
+  .metrics-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: .75rem; }
+  :where(.hero, .hero-content, .checkout-layout, .cart-layout, .account-layout) { grid-template-columns: minmax(0, 1fr) !important; }
+  :where(.hero, .checkout-layout, .cart-layout) { gap: 1rem; }
+  :where(.btn, button, input[type="submit"], .button) { min-height: 42px; }
+  table { font-size: .875rem; }
+  th, td { padding: .55rem !important; }
+}
+@media (max-width: 425px) {
+  .nav-container { padding: .65rem .75rem; }
+  .logo { font-size: 1.35rem; }
+  .admin-content { padding: .75rem; }
+  .metrics-grid { grid-template-columns: minmax(0, 1fr); }
+  :where(.product-grid, .products-grid, .products-container, .category-grid) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .65rem;
+  }
+  :where(.product-card, .product-item) { padding: .65rem; }
+  :where(.product-card h2, .product-card h3, .product-title, .product-name) { font-size: .95rem; }
+  :where(.product-card button, .product-item button) { width: 100%; }
+}
+@media (max-width: 340px) {
+  :where(.product-grid, .products-grid, .products-container, .category-grid) { grid-template-columns: minmax(0, 1fr); }
+  .nav-container { padding-inline: .5rem; }
+}
