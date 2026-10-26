@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BazarGo - Online Shopping</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="assets/css/pages/index.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body>
+
+  <!-- Header Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo">BazarGo</a>
+      <div class="nav-search">
+        <input type="text" id="store-search" placeholder="Search products, brands...">
+        <button type="button" id="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </div>
+      <div class="nav-actions">
+        <div id="auth-nav-slot">
+          <a href="login.html"><i class="fa-regular fa-user"></i> Login</a>
+        </div>
+        <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i> Cart (<span id="cart-count">0</span>)</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner (Syncs from admin/banner.html) -->
+  <section class="hero-section" id="hero-banner-section">
+    <div class="hero-container">
+      <div class="hero-content">
+        <span class="hero-tag" id="hero-tag"><i class="fa-solid fa-bolt"></i> Mega Sale • Up to 50% Off</span>
+        <h1 class="hero-heading" id="hero-title">Smart Online Shopping at <span class="highlight">BazarGo</span></h1>
+        <p class="hero-subtext" id="hero-subtitle">
+          Discover millions of premium electronics, everyday essentials, and fashion trends delivered straight to your door at unbeatable prices.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#featured" id="hero-cta-btn" class="btn btn-primary"><i class="fa-solid fa-bag-shopping"></i> Shop Now</a>
+          
+        </div>
+        <div class="hero-trust-badges">
+          <div class="badge-item"><i class="fa-solid fa-truck-fast"></i> <span>Fast Delivery</span></div>
+          <div class="badge-item"><i class="fa-solid fa-shield-halved"></i> <span>100% Safe Payments</span></div>
+          <div class="badge-item"><i class="fa-solid fa-rotate-left"></i> <span>Easy Returns</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card-promo">
+          <img id="hero-image" src="assets/images/sample1.jpg" alt="Featured Tech" onerror="this.src='https://via.placeholder.com/600x400?text=BazarGo'">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER ACCOUNT SECTION (Visible When Signed In) -->
+  <section class="container" id="customer-profile-section" style="display: none; margin-top: 2rem; margin-bottom: 2rem;">
+    <div style="background: var(--white, #ffffff); border: 1px solid var(--border, #e2e8f0); border-radius: 12px; padding: 1.75rem; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border, #e2e8f0); padding-bottom: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 54px; height: 54px; border-radius: 50%; background: #ffece2; color: var(--primary, #ea580c); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <i class="fa-solid fa-user-circle"></i>
+          </div>
+          <div>
+            <h3 id="cust-welcome-name" style="color: var(--dark, #0f172a); margin: 0; font-size: 1.2rem;">Welcome back!</h3>
+            <p id="cust-welcome-email" style="color: var(--text-muted, #64748b); margin: 0; font-size: 0.85rem;">user@example.com</p>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <a href="my-orders.html" class="btn btn-outline" style="color: var(--dark, #0f172a); border-color: var(--border, #e2e8f0); padding: 0.5rem 1rem; font-size: 0.85rem;">
+            <i class="fa-solid fa-box-open"></i> My Orders
+          </a>
+          <a href="account.html" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+            <i class="fa-solid fa-user-pen"></i> Edit Profile & Address
+          </a>
+          <button id="cust-dash-logout" class="btn btn-outline" style="color: var(--danger, #ef4444); border-color: #fee2e2; background: #fff5f5; padding: 0.5rem 1rem; font-size: 0.85rem; cursor: pointer;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+          </button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+        <div style="background: #f8fafc; border: 1px solid var(--border, #e2e8f0); border-radius: 8px; padding: 1rem;">
+          <small style="color: var(--text-muted, #64748b); text-transform: uppercase; font-weight: 700; font-size: 0.75rem;">Default Phone</small>
+          <div id="cust-phone-preview" style="color: var(--dark, #0f172a); font-weight: 600; margin-top: 0.25rem;">Not added yet</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid var(--border, #e2e8f0); border-radius: 8px; padding: 1rem;">
+          <small style="color: var(--text-muted, #64748b); text-transform: uppercase; font-weight: 700; font-size: 0.75rem;">Delivery Address</small>
+          <div id="cust-address-preview" style="color: var(--dark, #0f172a); font-weight: 600; margin-top: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Not set yet</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid var(--border, #e2e8f0); border-radius: 8px; padding: 1rem;">
+          <small style="color: var(--text-muted, #64748b); text-transform: uppercase; font-weight: 700; font-size: 0.75rem;">Active Role</small>
+          <div style="margin-top: 0.25rem;">
+            <span id="cust-role-pill" style="background: #e2e8f0; color: var(--slate, #475569); padding: 2px 8px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Customer</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products Container -->
+  <main class="container" id="featured">
+    <h2 class="section-title">Featured Products</h2>
+    <div class="product-grid" id="product-container"></div>
+  </main>
+
+  <!-- Product Details Modal with Star Rating -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal-container">
+      <button class="modal-close-btn" id="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-image-wrapper">
+          <img id="modal-img" src="" alt="Product Image">
+        </div>
+        <div class="modal-info">
+          <span class="modal-category-badge" id="modal-category">Category</span>
+          <h2 class="modal-title" id="modal-title">Product Title</h2>
+          
+          <div class="star-rating" id="modal-star-rating"></div>
+          <div id="modal-stock-status"></div>
+
+          <div class="modal-price" id="modal-price">0 BDT</div>
+          <p class="modal-desc" id="modal-desc">Product description will appear here.</p>
+
+          <div class="user-rating-box">
+            <label><i class="fa-solid fa-pen-nib"></i> Rate this product:</label>
+            <div class="interactive-stars" id="interactive-stars">
+              <i class="fa-solid fa-star" data-val="1"></i>
+              <i class="fa-solid fa-star" data-val="2"></i>
+              <i class="fa-solid fa-star" data-val="3"></i>
+              <i class="fa-solid fa-star" data-val="4"></i>
+              <i class="fa-solid fa-star" data-val="5"></i>
+            </div>
+            <div class="rating-feedback" id="rating-feedback">Thank you for your rating!</div>
+          </div>
+
+          <button class="modal-add-btn" id="modal-add-btn">
+            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subfooter -->
+  <footer class="site-subfooter">
+    <div class="subfooter-container">
+      <div class="footer-col">
+        <h4 style="margin-bottom:0.5rem; color:#0f172a;">BazarGo International</h4>
+        <div class="country-list">
+          <a href="#" class="country-item"><img src="https://flagcdn.com/w40/bd.png" alt="BD"> Bangladesh</a>
+          <a href="#" class="country-item"><img src="https://flagcdn.com/w40/pk.png" alt="PK"> Pakistan</a>
+          <a href="#" class="country-item"><img src="https://flagcdn.com/w40/lk.png" alt="LK"> Sri Lanka</a>
+          <a href="#" class="country-item"><img src="https://flagcdn.com/w40/np.png" alt="NP"> Nepal</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4 style="margin-bottom:0.5rem; color:#0f172a;">Follow Us</h4>
+        <div class="social-links">
+          <a href="#" class="social-btn facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="social-btn youtube"><i class="fa-brands fa-youtube"></i></a>
+          <a href="#" class="social-btn twitter"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#" class="social-btn instagram"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <p>&copy; BazarGo 2026. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initAuthListener, logoutUser } from "./assets/js/auth.js";
+    import { addToCart, updateCartBadge } from "./assets/js/cart.js";
+    import { db } from "./assets/js/firebase-config.js";
+    import { collection, doc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    const PRODUCTS_KEY = "bazargo_products";
+    const BANNER_KEY = "bazargo_hero_banner";
+
+    const defaultBanner = {
+      tag: "Mega Sale • Up to 50% Off",
+      title: "Smart Online Shopping at <span class='highlight'>BazarGo</span>",
+      subtitle: "Discover millions of premium electronics, everyday essentials, and fashion trends delivered straight to your door at unbeatable prices.",
+      imageUrl: "assets/images/sample1.jpg",
+      ctaText: "Shop Now",
+      ctaLink: "#featured"
+    };
+
+    const defaultProducts = [
+      { id: "101", title: "Wireless Headphones", price: 2500, stock: 25, category: "Electronics", imageUrl: "assets/images/sample1.jpg", rating: 4.8, reviewCount: 42, description: "High-grade audio clarity with immersive noise cancellation and long battery life." },
+      { id: "102", title: "Smart Fitness Watch", price: 1800, stock: 15, category: "Wearables", imageUrl: "assets/images/sample2.jpg", rating: 4.5, reviewCount: 29, description: "All-day heart rate, step tracking, sleep analytics, and water-resistant casing." },
+      { id: "103", title: "Smart Phone Pro", price: 170000, stock: 8, category: "Smartphones", imageUrl: "assets/images/sample3.jpg", rating: 4.9, reviewCount: 88, description: "Ultra-fast flagship processor, high-resolution AMOLED display, and triple camera array." },
+      { id: "104", title: "Fast Phone Charger", price: 1800, stock: 30, category: "Accessories", imageUrl: "assets/images/sample4.jpg", rating: 4.2, reviewCount: 16, description: "High-speed USB-C wall adapter supporting quick-charge protocols with safety protection." }
+    ];
+
+    let allProducts = [];
+    let currentSelectedProduct = null;
+
+    function renderStarRatingHTML(rating = 5, reviewCount = 0) {
+      const fullStars = Math.floor(rating);
+      const hasHalf = rating % 1 >= 0.3 && rating % 1 <= 0.8;
+      let starsHtml = "";
+
+      for (let i = 1; i <= 5; i++) {
+        if (i <= fullStars) {
+          starsHtml += `<i class="fa-solid fa-star"></i>`;
+        } else if (i === fullStars + 1 && hasHalf) {
+          starsHtml += `<i class="fa-solid fa-star-half-stroke"></i>`;
+        } else {
+          starsHtml += `<i class="fa-regular fa-star"></i>`;
+        }
+      }
+
+      return `
+        <div class="star-rating">
+          ${starsHtml}
+          <span style="font-weight: 700; margin-left: 3px; color: #1e293b;">${Number(rating).toFixed(1)}</span>
+          <span class="rating-count">(${reviewCount})</span>
+        </div>
+      `;
+    }
+
+    // 1. Sync Banner from admin/banner.html
+    function applyHeroBanner(banner) {
+      if (!banner || typeof banner !== "object") banner = defaultBanner;
+      if (banner.tag) {
+        document.getElementById("hero-tag").innerHTML = `<i class="fa-solid fa-bolt"></i> ${banner.tag}`;
+      }
+      if (banner.title) {
+        document.getElementById("hero-title").innerHTML = banner.title;
+      }
+      if (banner.subtitle) {
+        document.getElementById("hero-subtitle").textContent = banner.subtitle;
+      }
+      if (banner.imageUrl) {
+        document.getElementById("hero-image").src = banner.imageUrl;
+      }
+      if (banner.ctaText) {
+        document.getElementById("hero-cta-btn").innerHTML = `<i class="fa-solid fa-bag-shopping"></i> ${banner.ctaText}`;
+      }
+      if (banner.ctaLink) {
+        document.getElementById("hero-cta-btn").href = banner.ctaLink;
+      }
+    }
+
+    // 2. Authentication State Handling
+    if (typeof initAuthListener === "function") {
+      initAuthListener(({ user, profile }) => {
+        const authSlot = document.getElementById("auth-nav-slot");
+        const customerSection = document.getElementById("customer-profile-section");
+
+        if (user) {
+          const name = profile?.fullName || user.email?.split('@')[0] || "Customer";
+          authSlot.innerHTML = `
+            <a href="account.html"><i class="fa-solid fa-user-check"></i> ${name}</a>
+            <a href="my-orders.html" style="margin-left: 8px;"><i class="fa-solid fa-box"></i> Orders</a>
+            ${profile?.role === 'admin' ? '<a href="admin/dashboard.html" style="color:var(--primary, #ea580c); font-weight:700; margin-left:8px;">[Admin]</a>' : ''}
+            <button id="logout-btn" style="background:none; border:none; cursor:pointer; color:#ef4444; font-weight:600; margin-left:8px;">Logout</button>
+          `;
+          document.getElementById("logout-btn").addEventListener("click", logoutUser);
+
+          customerSection.style.display = "block";
+          document.getElementById("cust-welcome-name").textContent = `Welcome, ${name}!`;
+          document.getElementById("cust-welcome-email").textContent = user.email || "";
+          document.getElementById("cust-phone-preview").textContent = profile?.phone || "No phone added yet";
+          document.getElementById("cust-address-preview").textContent = profile?.address || "No address added yet";
+
+          if (profile?.role) {
+            const rolePill = document.getElementById("cust-role-pill");
+            rolePill.textContent = profile.role;
+            if (profile.role === 'admin') {
+              rolePill.style.background = '#fef3c7';
+              rolePill.style.color = '#d97706';
+            }
+          }
+          document.getElementById("cust-dash-logout").addEventListener("click", logoutUser);
+        } else {
+          authSlot.innerHTML = `<a href="login.html"><i class="fa-regular fa-user"></i> Login</a>`;
+          customerSection.style.display = "none";
+        }
+      });
+    }
+
+    if (typeof updateCartBadge === "function") {
+      updateCartBadge();
+    }
+
+    // Firestore is the shared source of truth. Updates are pushed to every open device.
+    let productsUnsubscribe = null;
+    let bannerUnsubscribe = null;
+    function loadStoreProducts() {
+      if (productsUnsubscribe) productsUnsubscribe();
+      productsUnsubscribe = onSnapshot(query(collection(db, "products"), where("isPublished", "==", true)), (snapshot) => {
+        allProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(allProducts));
+        renderProducts(allProducts);
+        if (currentSelectedProduct) {
+          const latest = allProducts.find(p => String(p.id) === String(currentSelectedProduct.id));
+          if (latest) { currentSelectedProduct = latest; openProductModal(latest.id); }
+          else closeProductModal();
+        }
+      }, (error) => {
+        console.error("Live product sync failed:", error);
+        const container = document.getElementById("product-container");
+        if (!allProducts.length) container.innerHTML = '<p role="alert">Products could not be loaded. Check your connection and Firestore permissions.</p>';
+      });
+    }
+
+    function listenForHeroBanner() {
+      if (bannerUnsubscribe) bannerUnsubscribe();
+      bannerUnsubscribe = onSnapshot(doc(db, "store_settings", "heroBanner"), (snapshot) => {
+        applyHeroBanner(snapshot.exists() ? snapshot.data() : defaultBanner);
+      }, (error) => {
+        console.error("Live banner sync failed:", error);
+        applyHeroBanner(defaultBanner);
+      });
+    }
+    window.addEventListener("beforeunload", () => {
+      if (productsUnsubscribe) productsUnsubscribe();
+      if (bannerUnsubscribe) bannerUnsubscribe();
+    });
+
+    // 4. Render Product Cards with Stock Awareness
+    function renderProducts(list) {
+      const container = document.getElementById("product-container");
+      if (!list || list.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: #64748b;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.5;"></i>
+            <p style="font-size: 1.1rem; margin: 0;">No products found matching your search.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(p => {
+        const hasStockField = p.stock !== undefined && p.stock !== null;
+        const stockQty = hasStockField ? Number(p.stock) : Infinity;
+        const isOutOfStock = hasStockField && stockQty <= 0;
+
+        return `
+          <article class="card" data-id="${p.id}">
+            <img src="${p.imageUrl || 'assets/images/sample1.jpg'}" 
+                 alt="${p.title || 'Product'}" 
+                 class="card-click-trigger open-details" 
+                 data-id="${p.id}"
+                 onerror="this.src='https://via.placeholder.com/250x200?text=Product'">
+            
+            <div class="card-body">
+              <h3 class="card-title card-click-trigger open-details" data-id="${p.id}">
+                ${p.title || p.name || 'Untitled Product'}
+              </h3>
+
+              ${renderStarRatingHTML(p.rating || 5, p.reviewCount || 0)}
+
+              <div>
+                ${hasStockField ? (
+                  isOutOfStock 
+                    ? `<span class="stock-tag out-stock">Out of Stock</span>` 
+                    : `<span class="stock-tag in-stock">In Stock (${stockQty})</span>`
+                ) : ''}
+              </div>
+
+              <p class="card-price">${Number(p.price || 0).toLocaleString()} BDT</p>
+              <div class="card-actions">
+                <button class="btn-cart" 
+                  data-id="${p.id}" 
+                  data-title="${p.title || p.name || ''}" 
+                  data-price="${p.price || 0}" 
+                  data-img="${p.imageUrl || ''}"
+                  data-stock="${stockQty}"
+                  ${isOutOfStock ? 'disabled style="background:#94a3b8; cursor:not-allowed;"' : ''}>
+                  ${isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+                </button>
+                <button class="btn-wishlist">♥</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      document.querySelectorAll(".open-details").forEach(elem => {
+        elem.addEventListener("click", (e) => {
+          const productId = e.currentTarget.dataset.id;
+          openProductModal(productId);
+        });
+      });
+
+      document.querySelectorAll(".btn-cart").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          const { id, title, price, img, stock } = e.currentTarget.dataset;
+          if (stock !== undefined && Number(stock) <= 0) {
+            alert("Sorry, this product is currently out of stock.");
+            return;
+          }
+          if (typeof addToCart === "function") {
+            await addToCart({ id, title, price, imageUrl: img }, 1);
+          }
+          alert(`Added "${title}" to your cart!`);
+        });
+      });
+    }
+
+    // Modal & Interactive Rating
+    const modal = document.getElementById("product-modal");
+    const modalCloseBtn = document.getElementById("modal-close");
+    const modalAddBtn = document.getElementById("modal-add-btn");
+    const interactiveStars = document.querySelectorAll("#interactive-stars i");
+    const ratingFeedback = document.getElementById("rating-feedback");
+
+    function openProductModal(productId) {
+      const prod = allProducts.find(p => String(p.id) === String(productId));
+      if (!prod) return;
+
+      currentSelectedProduct = prod;
+
+      const hasStockField = prod.stock !== undefined && prod.stock !== null;
+      const stockQty = hasStockField ? Number(prod.stock) : Infinity;
+      const isOutOfStock = hasStockField && stockQty <= 0;
+
+      document.getElementById("modal-img").src = prod.imageUrl || "assets/images/sample1.jpg";
+      document.getElementById("modal-title").textContent = prod.title || prod.name || "Untitled Product";
+      document.getElementById("modal-price").textContent = `${Number(prod.price || 0).toLocaleString()} BDT`;
+      document.getElementById("modal-category").textContent = prod.category || "General";
+      document.getElementById("modal-desc").textContent = prod.description || "No specific details provided for this product.";
+      
+      document.getElementById("modal-star-rating").innerHTML = renderStarRatingHTML(prod.rating || 5, prod.reviewCount || 0);
+
+      const stockStatusContainer = document.getElementById("modal-stock-status");
+      if (hasStockField) {
+        stockStatusContainer.innerHTML = isOutOfStock
+          ? `<span class="stock-tag out-stock" style="margin-bottom:0.75rem;">Out of Stock</span>`
+          : `<span class="stock-tag in-stock" style="margin-bottom:0.75rem;">In Stock (${stockQty} units available)</span>`;
+      } else {
+        stockStatusContainer.innerHTML = "";
+      }
+
+      if (isOutOfStock) {
+        modalAddBtn.disabled = true;
+        modalAddBtn.innerHTML = `<i class="fa-solid fa-ban"></i> Out of Stock`;
+      } else {
+        modalAddBtn.disabled = false;
+        modalAddBtn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> Add to Cart`;
+      }
+
+      ratingFeedback.style.display = "none";
+      interactiveStars.forEach(s => s.classList.remove("active", "hovered"));
+
+      modal.classList.add("active");
+    }
+
+    function closeProductModal() {
+      modal.classList.remove("active");
+      currentSelectedProduct = null;
+    }
+
+    modalCloseBtn.addEventListener("click", closeProductModal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeProductModal();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("active")) closeProductModal();
+    });
+
+    interactiveStars.forEach(star => {
+      star.addEventListener("mouseenter", (e) => {
+        const val = parseInt(e.target.dataset.val);
+        interactiveStars.forEach(s => {
+          s.classList.toggle("hovered", parseInt(s.dataset.val) <= val);
+        });
+      });
+
+      star.addEventListener("mouseleave", () => {
+        interactiveStars.forEach(s => s.classList.remove("hovered"));
+      });
+
+      star.addEventListener("click", (e) => {
+        if (!currentSelectedProduct) return;
+        const userRating = parseInt(e.target.dataset.val);
+
+        interactiveStars.forEach(s => {
+          s.classList.toggle("active", parseInt(s.dataset.val) <= userRating);
+        });
+
+        const currentCount = currentSelectedProduct.reviewCount || 0;
+        const currentAvg = currentSelectedProduct.rating || 5;
+        const newCount = currentCount + 1;
+        const newAvg = Number(((currentAvg * currentCount + userRating) / newCount).toFixed(1));
+
+        currentSelectedProduct.rating = newAvg;
+        currentSelectedProduct.reviewCount = newCount;
+
+        allProducts = allProducts.map(p => p.id === currentSelectedProduct.id ? currentSelectedProduct : p);
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(allProducts));
+
+        document.getElementById("modal-star-rating").innerHTML = renderStarRatingHTML(newAvg, newCount);
+        ratingFeedback.textContent = `Thank you! You rated ${userRating} star${userRating > 1 ? 's' : ''}. (New Avg: ${newAvg})`;
+        ratingFeedback.style.display = "block";
+
+        renderProducts(allProducts);
+      });
+    });
+
+    modalAddBtn.addEventListener("click", async () => {
+      if (currentSelectedProduct) {
+        const hasStockField = currentSelectedProduct.stock !== undefined && currentSelectedProduct.stock !== null;
+        if (hasStockField && Number(currentSelectedProduct.stock) <= 0) {
+          alert("Sorry, this item is out of stock.");
+          return;
+        }
+
+        if (typeof addToCart === "function") {
+          await addToCart({
+            id: currentSelectedProduct.id,
+            title: currentSelectedProduct.title || currentSelectedProduct.name,
+            price: currentSelectedProduct.price,
+            imageUrl: currentSelectedProduct.imageUrl
+          }, 1);
+        }
+        alert(`Added "${currentSelectedProduct.title || currentSelectedProduct.name}" to your cart!`);
+        closeProductModal();
+      }
+    });
+
+    // Search Controls
+    const searchInput = document.getElementById("store-search");
+    const searchBtn = document.getElementById("search-btn");
+
+    function executeSearch() {
+      const query = searchInput.value.toLowerCase().trim();
+      const filtered = allProducts.filter(p => {
+        const title = (p.title || p.name || "").toLowerCase();
+        const category = (p.category || "").toLowerCase();
+        const desc = (p.description || "").toLowerCase();
+        return title.includes(query) || category.includes(query) || desc.includes(query);
+      });
+
+      renderProducts(filtered);
+
+      const featuredSection = document.getElementById("featured");
+      if (featuredSection && query.length > 0) {
+        featuredSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    searchInput.addEventListener("input", executeSearch);
+    searchBtn.addEventListener("click", executeSearch);
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        executeSearch();
+      }
+    });
+
+    // Initialize Storefront
+    listenForHeroBanner();
+    loadStoreProducts();
+  </script>
+</body>
+</html>
