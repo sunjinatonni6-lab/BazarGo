@@ -233,3 +233,29 @@
       cursor: not-allowed !important;
       opacity: 0.7;
     }
+.modal-desc {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+}
+
+.modal-desc p {
+    margin: 0 0 10px;
+}
+
+.modal-desc .product-description-heading {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 16px 0 8px;
+    color: inherit;
+}
+
+.modal-desc .product-description-list {
+    margin: 0 0 12px;
+    padding-left: 22px;
+    list-style: disc;
+}
+
+.modal-desc .product-description-list li {
+    margin-bottom: 6px;
+}
