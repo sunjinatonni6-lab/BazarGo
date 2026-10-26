@@ -1,0 +1,43 @@
+
+/* Admin dashboard responsive layout */
+.admin-sidebar { flex: 0 0 250px; min-width: 0; }
+.admin-content { min-width: 0; overflow-x: auto; }
+.admin-content > * { max-width: 100%; }
+.admin-content table { width: 100%; }
+@media (max-width: 768px) {
+  body { display: flex; flex-direction: column; }
+  .admin-sidebar { flex: 0 0 auto; width: 100%; }
+  .admin-sidebar h2 { margin-bottom: .75rem; }
+  .admin-nav { flex-direction: row; flex-wrap: wrap; }
+  .admin-content { padding: 1rem; overflow-x: auto; }
+  .metrics-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr)); }
+}
+@media (max-width: 375px) {
+  .admin-content { padding: .65rem; }
+  .metric-card { padding: .9rem; }
+  .metric-card p { font-size: 1.35rem; overflow-wrap: anywhere; }
+}
+
+
+/* Shared mobile layout fixes for every admin page. */
+*, *::before, *::after { box-sizing: border-box; }
+.admin-main, .admin-content, main, section, .card { min-width: 0; max-width: 100%; }
+.admin-sidebar { flex-shrink: 0; }
+.admin-content { overflow-x: hidden; }
+.admin-content table, .admin-main table { display: block; width: 100%; max-width: 100%; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+.admin-content input, .admin-content select, .admin-content textarea, .admin-main input, .admin-main select, .admin-main textarea { max-width: 100%; min-width: 0; }
+@media (max-width: 768px) {
+  body:has(.admin-sidebar) { display: flex; flex-direction: column; }
+  .admin-sidebar { width: 100%; max-width: 100%; position: static; }
+  .sidebar-menu, .admin-nav { display: flex; flex-direction: row; flex-wrap: wrap; }
+  .admin-main { width: 100%; }
+  .admin-topbar { padding: 1rem; }
+  .admin-content { padding: 1rem; }
+  .admin-content section, .admin-content > div { padding: .85rem !important; }
+}
+@media (max-width: 420px) {
+  .admin-content { padding: .6rem; }
+  .admin-sidebar { padding: .75rem; }
+  .sidebar-brand { font-size: 1rem; }
+  .metrics-grid { grid-template-columns: minmax(0, 1fr); }
+}
