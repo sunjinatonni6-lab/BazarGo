@@ -259,3 +259,27 @@
 .modal-desc .product-description-list li {
     margin-bottom: 6px;
 }
+.modal-desc {
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.modal-desc p {
+    margin: 0 0 12px;
+}
+
+.modal-desc .product-description-heading {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 16px 0 8px;
+}
+
+.modal-desc .product-description-list {
+    list-style: disc;
+    padding-left: 22px;
+    margin: 0 0 14px;
+}
+
+.modal-desc .product-description-list li {
+    margin-bottom: 6px;
+}
