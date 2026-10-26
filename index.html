@@ -428,38 +428,41 @@
       document.getElementById("modal-price").textContent = `${Number(prod.price || 0).toLocaleString()} BDT`;
       document.getElementById("modal-category").textContent = prod.category || "General";
       const descElement = document.getElementById("modal-desc");
-const description = prod.description || "No specific details provided for this product.";
+      const description = prod.description || "No specific details provided for this product.";
 
-descElement.replaceChildren();
+      // Render description lines as headings, bullet lists, or paragraphs.
+      descElement.replaceChildren();
+      let currentList = null;
 
-description.split(/\r?\n/).forEach((line) => {
-    const text = line.trim();
-
-    if (!text) return;
-
-    if (text.startsWith("- ") || text.startsWith("• ")) {
-        let list = descElement.lastElementChild;
-
-        if (!list || list.tagName !== "UL") {
-            list = document.createElement("ul");
-            list.className = "product-description-list";
-            descElement.appendChild(list);
+      description.split(/\r?\n/).forEach((line) => {
+        const text = line.trim();
+        if (!text) {
+          currentList = null;
+          return;
         }
 
-        const li = document.createElement("li");
-        li.textContent = text.slice(2);
-        list.appendChild(li);
-    } else if (text.endsWith(":")) {
-        const heading = document.createElement("h4");
-        heading.className = "product-description-heading";
-        heading.textContent = text.slice(0, -1);
-        descElement.appendChild(heading);
-    } else {
-        const paragraph = document.createElement("p");
-        paragraph.textContent = text;
-        descElement.appendChild(paragraph);
-    }
-});
+        if (text.startsWith("- ") || text.startsWith("• ")) {
+          if (!currentList) {
+            currentList = document.createElement("ul");
+            currentList.className = "product-description-list";
+            descElement.appendChild(currentList);
+          }
+          const li = document.createElement("li");
+          li.textContent = text.slice(2).trim();
+          currentList.appendChild(li);
+        } else if (text.endsWith(":")) {
+          currentList = null;
+          const heading = document.createElement("h4");
+          heading.className = "product-description-heading";
+          heading.textContent = text.slice(0, -1);
+          descElement.appendChild(heading);
+        } else {
+          currentList = null;
+          const paragraph = document.createElement("p");
+          paragraph.textContent = text;
+          descElement.appendChild(paragraph);
+        }
+      });
       
       document.getElementById("modal-star-rating").innerHTML = renderStarRatingHTML(prod.rating || 5, prod.reviewCount || 0);
 
