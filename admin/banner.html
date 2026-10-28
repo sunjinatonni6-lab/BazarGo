@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Hero Banner - BazarGo Admin</title>
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="../assets/css/pages/banner-admin.css">
+  <link rel="stylesheet" href="../assets/css/responsive.css">
+  <link rel="stylesheet" href="../assets/css/admin-responsive.css">
+</head>
+<body>
+
+  <aside class="admin-sidebar">
+    <a href="dashboard.html" class="sidebar-brand">
+      <i class="fa-solid fa-boxes-stacked"></i> Bazar<span>Go</span> Admin
+    </a>
+    <ul class="sidebar-menu">
+      <li>
+        <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+      </li>
+      <li>
+        <a href="products.html"><i class="fa-solid fa-layer-group"></i> Products</a>
+      </li>
+      <li>
+        <a href="orders.html"><i class="fa-solid fa-clipboard-list"></i> Orders</a>
+      </li>
+      <li>
+        <a href="banner.html" class="active"><i class="fa-solid fa-image"></i> Hero Banner</a>
+      </li>
+      <li>
+        <a href="../index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Storefront</a>
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      <a href="../login.html"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</a>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <h2>Hero Banner Settings</h2>
+      <span style="font-size: 0.9rem; color: var(--slate);"><i class="fa-solid fa-user-shield"></i> Administrator</span>
+    </header>
+
+    <main class="admin-content">
+      <section class="card">
+        <h3 style="margin-bottom: 0.5rem; color: var(--dark);"><i class="fa-solid fa-pen-to-square"></i> Customize Storefront Hero Section</h3>
+        <p style="color: var(--slate); font-size: 0.9rem; margin-bottom: 1.5rem;">
+          Any changes saved here will immediately update the promotional hero section on the customer homepage.
+        </p>
+
+        <form id="hero-banner-admin-form" style="max-width: 650px;">
+          <div class="form-group">
+            <label for="banner-tag-input">Top Discount Pill / Tag</label>
+            <input type="text" id="banner-tag-input" placeholder="Mega Sale • Up to 50% Off">
+          </div>
+
+          <div class="form-group">
+            <label for="banner-heading-input">Headline (HTML tags supported) *</label>
+            <input type="text" id="banner-heading-input" required placeholder="Smart Online Shopping at <span class='highlight'>BazarGo</span>">
+          </div>
+
+          <div class="form-group">
+            <label for="banner-subtext-input">Subtext / Description *</label>
+            <textarea id="banner-subtext-input" rows="3" required placeholder="Discover millions of premium electronics, everyday essentials, and fashion trends..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="banner-image-input">Banner Visual Image Path or URL *</label>
+            <input type="text" id="banner-image-input" required placeholder="assets/images/sample1.jpg or https://...">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="banner-cta-text">Button Label</label>
+              <input type="text" id="banner-cta-text" placeholder="Shop Now">
+            </div>
+            <div class="form-group">
+              <label for="banner-cta-link">Button Target Link</label>
+              <input type="text" id="banner-cta-link" placeholder="#featured">
+            </div>
+          </div>
+
+          <!-- Live Preview -->
+          <div class="banner-preview-box">
+            <img id="banner-preview" class="banner-preview-img" src="../assets/images/sample1.jpg" alt="Preview" onerror="this.src='https://via.placeholder.com/140x90?text=Preview'">
+            <div>
+              <strong style="font-size: 0.85rem; color: var(--slate);">Current Image Preview</strong>
+              <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 2px;">Updates automatically when you change the image path or URL.</p>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.25rem;">
+            <button type="submit" class="btn-save">
+              <i class="fa-solid fa-save"></i> Save Changes to Storefront
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { db } from "../assets/js/firebase-config.js";
+    import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    import { requireAdminGuard } from "../assets/js/auth.js";
+    requireAdminGuard();
+    const BANNER_STORAGE_KEY = "bazargo_hero_banner";
+    const bannerRef = doc(db, "store_settings", "heroBanner");
+
+    const defaultBanner = {
+      tag: "Mega Sale • Up to 50% Off",
+      title: "Smart Online Shopping at <span class='highlight'>BazarGo</span>",
+      subtitle: "Discover millions of premium electronics, everyday essentials, and fashion trends delivered straight to your door at unbeatable prices.",
+      imageUrl: "assets/images/sample1.jpg",
+      ctaText: "Shop Now",
+      ctaLink: "#featured"
+    };
+
+    function updatePreview(url) {
+      const previewImg = document.getElementById("banner-preview");
+      if (!url) return;
+      const normalized = url.startsWith("http") || url.startsWith("../") ? url : `../${url}`;
+      previewImg.src = normalized;
+    }
+
+    function fillBannerForm(data) {
+      document.getElementById("banner-tag-input").value = data.tag || defaultBanner.tag;
+      document.getElementById("banner-heading-input").value = data.title || defaultBanner.title;
+      document.getElementById("banner-subtext-input").value = data.subtitle || defaultBanner.subtitle;
+      document.getElementById("banner-image-input").value = data.imageUrl || defaultBanner.imageUrl;
+      document.getElementById("banner-cta-text").value = data.ctaText || defaultBanner.ctaText;
+      document.getElementById("banner-cta-link").value = data.ctaLink || defaultBanner.ctaLink;
+
+      updatePreview(data.imageUrl || defaultBanner.imageUrl);
+    }
+
+    document.getElementById("banner-image-input").addEventListener("input", (e) => {
+      updatePreview(e.target.value.trim());
+    });
+
+    document.getElementById("hero-banner-admin-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      let imgVal = document.getElementById("banner-image-input").value.trim();
+      if (imgVal.startsWith("../")) {
+        imgVal = imgVal.replace("../", "");
+      }
+
+      const bannerData = {
+        tag: document.getElementById("banner-tag-input").value.trim() || defaultBanner.tag,
+        title: document.getElementById("banner-heading-input").value.trim(),
+        subtitle: document.getElementById("banner-subtext-input").value.trim(),
+        imageUrl: imgVal || defaultBanner.imageUrl,
+        ctaText: document.getElementById("banner-cta-text").value.trim() || "Shop Now",
+        ctaLink: document.getElementById("banner-cta-link").value.trim() || "#featured"
+      };
+
+      try {
+        await setDoc(bannerRef, { ...bannerData, updatedAt: serverTimestamp() }, { merge: true });
+        localStorage.setItem(BANNER_STORAGE_KEY, JSON.stringify(bannerData));
+        alert("Hero banner saved. All connected devices will update automatically.");
+      } catch (error) {
+        console.error("Failed to save hero banner:", error);
+        alert("Could not save the banner to Firebase. Check your internet connection and Firestore permissions.");
+      }
+    });
+
+    onSnapshot(bannerRef, (snapshot) => fillBannerForm(snapshot.exists() ? snapshot.data() : defaultBanner), (error) => {
+      console.error("Could not load live banner settings:", error);
+      fillBannerForm(defaultBanner);
+    });
+  </script>
+</body>
+</html>
