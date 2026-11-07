@@ -111,19 +111,13 @@
         <h2 class="section-title" id="category-section-title">Shop by Category</h2>
       </div>
       <div class="category-heading-actions">
-        <span class="category-hint">Choose a category to explore products</span>
         <div class="category-menu-wrap" id="category-menu-wrap">
-          <button type="button" class="category-menu-toggle" id="category-menu-toggle" aria-label="Category options" aria-haspopup="true" aria-expanded="false">
-            <i class="fa-solid fa-ellipsis-vertical"></i>
+          <button type="button" class="category-menu-toggle" id="category-menu-toggle" aria-label="Open category list" aria-haspopup="true" aria-controls="category-dropdown" aria-expanded="false">
+            <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
           </button>
           <div class="category-dropdown" id="category-dropdown" hidden>
-            <button type="button" class="category-menu-item" id="view-all-categories"><i class="fa-solid fa-border-all"></i> View All Categories</button>
-            <a class="category-menu-item admin-category-link" id="manage-categories-link" href="admin/products.html" hidden><i class="fa-solid fa-list-check"></i> Manage Categories</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="category-filter-list" id="category-filter-list" role="group" aria-label="Filter products by category">
+            <p class="category-dropdown-title">Browse Categories</p>
+            <div class="category-filter-list" id="category-filter-list" role="group" aria-label="Filter products by category">
       <button type="button" class="category-filter active" data-category="all" aria-pressed="true">
         <span class="category-icon"><i class="fa-solid fa-border-all"></i></span><span class="category-copy"><span class="category-name">All Products</span><span class="category-count" data-category-count="all">0 products</span></span><i class="fa-solid fa-arrow-right category-arrow" aria-hidden="true"></i>
       </button>
@@ -151,6 +145,11 @@
       <button type="button" class="category-filter" data-category="Food & Snacks" aria-pressed="false">
         <span class="category-icon"><i class="fa-solid fa-cookie-bite"></i></span><span class="category-copy"><span class="category-name">Food &amp; Snacks</span><span class="category-count" data-category-count="Food & Snacks">0 products</span></span><i class="fa-solid fa-arrow-right category-arrow" aria-hidden="true"></i>
       </button>
+            </div>
+            <a class="category-menu-item admin-category-link" id="manage-categories-link" href="admin/products.html" hidden><i class="fa-solid fa-list-check"></i> Manage Categories</a>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -169,15 +168,17 @@
     .category-eyebrow { margin:0 0 .25rem; color:#ea580c; font-size:.78rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
     .shop-categories .section-title, .products-heading-row .section-title { margin:0 0 .35rem; }
     .category-hint { color:#64748b; font-size:.9rem; margin:0; }
-    .category-filter-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.85rem; margin-top:1.15rem; }
-    .category-filter { position:relative; min-width:0; min-height:88px; display:flex; align-items:center; gap:.8rem; padding:.9rem 1rem; border:1px solid #e2e8f0; border-radius:13px; background:#fff; color:#334155; font:inherit; text-align:left; cursor:pointer; transition:background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease; }
-    .category-icon { flex:0 0 2.65rem; width:2.65rem; height:2.65rem; display:grid; place-items:center; border-radius:11px; background:#fff1e8; color:#ea580c; font-size:1.05rem; transition:background .2s ease,color .2s ease,transform .2s ease; }
+    .category-dropdown-title { margin:.25rem .55rem .55rem; color:#64748b; font-size:.72rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; }
+    .category-dropdown { position:absolute; z-index:50; top:calc(100% + 8px); right:0; width:min(340px, calc(100vw - 32px)); max-height:min(70vh, 480px); overflow-y:auto; padding:.65rem; background:#fff; border:1px solid #e2e8f0; border-radius:12px; box-shadow:0 14px 34px rgba(15,23,42,.16); }
+    .category-filter-list { display:grid; grid-template-columns:1fr; gap:.3rem; margin:0; }
+    .category-filter { position:relative; min-width:0; min-height:54px; display:flex; align-items:center; gap:.7rem; padding:.55rem .65rem; border:1px solid transparent; border-radius:8px; background:#fff; color:#334155; font:inherit; text-align:left; cursor:pointer; transition:background .18s ease,border-color .18s ease; }
+    .category-icon { flex:0 0 2rem; width:2rem; height:2rem; display:grid; place-items:center; border-radius:8px; background:#fff1e8; color:#ea580c; font-size:.9rem; }
     .category-copy { min-width:0; flex:1; display:flex; flex-direction:column; gap:.28rem; }
-    .category-name { color:#263445; font-size:.9rem; line-height:1.3; font-weight:700; overflow-wrap:anywhere; }
-    .category-count { color:#94a3b8; font-size:.75rem; line-height:1.2; font-weight:500; }
+    .category-name { color:#263445; font-size:.84rem; line-height:1.3; font-weight:700; overflow-wrap:anywhere; }
+    .category-count { color:#94a3b8; font-size:.7rem; line-height:1.2; font-weight:500; }
     .category-arrow { flex:0 0 auto; color:#cbd5e1; font-size:.78rem; transition:transform .2s ease,color .2s ease; }
-    .category-filter:hover { border-color:#fdba74; transform:translateY(-2px); box-shadow:0 7px 18px rgba(15,23,42,.07); }
-    .category-filter:hover .category-arrow { color:#ea580c; transform:translateX(3px); }
+    .category-filter:hover { border-color:#fed7aa; background:#fff7ed; }
+    .category-filter:hover .category-arrow { color:#ea580c; transform:translateX(2px); }
     .category-filter.active { border-color:#ea580c; background:#fff7ed; box-shadow:0 0 0 1px #ea580c inset,0 5px 14px rgba(234,88,12,.08); }
     .category-filter.active .category-icon { background:#ea580c; color:#fff; }
     .category-filter.active .category-name { color:#c2410c; }
@@ -185,10 +186,7 @@
     .category-filter:focus-visible, .category-menu-toggle:focus-visible, .category-menu-item:focus-visible { outline:3px solid rgba(234,88,12,.28); outline-offset:2px; }
     .products-heading-row { margin-bottom:1rem; }
     .products-result-count { color:#64748b; font-size:.88rem; margin-bottom:1rem; }
-    @media (max-width:1100px) { .category-filter-list { grid-template-columns:repeat(3,minmax(0,1fr)); } }
-    @media (max-width:760px) { .category-filter-list { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; } .category-filter { min-height:82px; padding:.75rem; gap:.65rem; } .category-icon { width:2.4rem; height:2.4rem; flex-basis:2.4rem; } }
-    @media (max-width:480px) { .shop-categories { margin-top:1.25rem; } .category-heading-row { align-items:flex-start; } .category-heading-actions { margin-bottom:0; } .category-heading-actions .category-hint { display:none; } .category-filter-list { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.55rem; margin-top:.9rem; } .category-filter { min-height:84px; padding:.7rem .6rem; gap:.5rem; border-radius:11px; } .category-icon { width:2.15rem; height:2.15rem; flex-basis:2.15rem; border-radius:9px; font-size:.9rem; } .category-name { font-size:.78rem; } .category-count { font-size:.68rem; } .category-arrow { display:none; } }
-    @media (max-width:350px) { .category-filter { align-items:flex-start; flex-direction:column; min-height:105px; } .category-copy { width:100%; } }
+    @media (max-width:480px) { .shop-categories { margin-top:1.25rem; } .category-heading-row { align-items:center; } .category-heading-actions { margin:0; } .category-dropdown { width:min(320px, calc(100vw - 28px)); } .category-filter { min-height:52px; padding:.5rem .55rem; } .category-icon { width:1.9rem; height:1.9rem; flex-basis:1.9rem; } .category-name { font-size:.8rem; } .category-count { font-size:.67rem; } }
 
 
     .hero-slider-dots { display:flex; justify-content:center; align-items:center; gap:.55rem; margin:1.15rem auto 0; }
@@ -197,12 +195,11 @@
     .hero-slider-dot[aria-current="true"] { width:25px; border-radius:20px; background:var(--primary,#f85606); }
     .hero-content, .hero-visual { transition:opacity .35s ease; }
     .hero-section.is-transitioning .hero-content, .hero-section.is-transitioning .hero-visual { opacity:.18; }
-    .category-heading-actions { display:flex; align-items:center; gap:.65rem; margin-bottom:1rem; }
+    .category-heading-actions { display:flex; align-items:center; gap:.65rem; margin:0; }
     .category-heading-actions .category-hint { margin:0; }
     .category-menu-wrap { position:relative; }
     .category-menu-toggle { width:36px; height:36px; display:grid; place-items:center; border:1px solid #e2e8f0; border-radius:8px; background:#fff; color:#334155; cursor:pointer; }
     .category-menu-toggle:hover, .category-menu-toggle[aria-expanded="true"] { border-color:#fdba74; color:#ea580c; }
-    .category-dropdown { position:absolute; z-index:30; top:calc(100% + 7px); right:0; min-width:190px; padding:.35rem; background:#fff; border:1px solid #e2e8f0; border-radius:9px; box-shadow:0 10px 25px rgba(15,23,42,.12); }
     .category-dropdown[hidden] { display:none; }
     .category-menu-item { width:100%; display:flex; align-items:center; gap:.65rem; padding:.65rem .75rem; border:0; border-radius:6px; background:transparent; color:#334155; text-decoration:none; font:inherit; font-size:.88rem; text-align:left; cursor:pointer; }
     .category-menu-item[hidden] { display:none; }
@@ -489,12 +486,6 @@
       if (!categoryMenuWrap.contains(event.target)) closeCategoryMenu();
     });
     document.addEventListener("keydown", event => { if (event.key === "Escape") closeCategoryMenu(); });
-    document.getElementById("view-all-categories").addEventListener("click", () => {
-      const allButton = document.querySelector('.category-filter[data-category="all"]');
-      if (allButton) allButton.click();
-      document.getElementById("category-filter-list").scrollIntoView({ behavior: "smooth", block: "center" });
-      closeCategoryMenu();
-    });
     document.getElementById("manage-categories-link").addEventListener("click", closeCategoryMenu);
 
     // 4. Render Product Cards with Stock Awareness
@@ -781,6 +772,7 @@ description.split(/\r?\n/).forEach((line) => {
           item.setAttribute("aria-pressed", String(selected));
         });
         applyProductFilters();
+        closeCategoryMenu();
         document.getElementById("featured")?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
