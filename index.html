@@ -54,6 +54,7 @@
         </div>
       </div>
     </div>
+    <div class="hero-slider-dots" id="hero-slider-dots" aria-label="Hero banner navigation" role="tablist"></div>
   </section>
 
   <!-- CUSTOMER ACCOUNT SECTION (Visible When Signed In) -->
@@ -109,7 +110,18 @@
         <p class="category-eyebrow">Find your favourites</p>
         <h2 class="section-title" id="category-section-title">Shop by Category</h2>
       </div>
-      <span class="category-hint">Choose a category to explore products</span>
+      <div class="category-heading-actions">
+        <span class="category-hint">Choose a category to explore products</span>
+        <div class="category-menu-wrap" id="category-menu-wrap">
+          <button type="button" class="category-menu-toggle" id="category-menu-toggle" aria-label="Category options" aria-haspopup="true" aria-expanded="false">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+          <div class="category-dropdown" id="category-dropdown" hidden>
+            <button type="button" class="category-menu-item" id="view-all-categories"><i class="fa-solid fa-border-all"></i> View All Categories</button>
+            <a class="category-menu-item admin-category-link" id="manage-categories-link" href="admin/products.html" hidden><i class="fa-solid fa-list-check"></i> Manage Categories</a>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="category-filter-list" id="category-filter-list" role="group" aria-label="Filter products by category">
       <button type="button" class="category-filter active" data-category="all" aria-pressed="true"><i class="fa-solid fa-border-all"></i><span>All Products</span></button>
@@ -149,6 +161,24 @@
     .products-result-count { color:#64748b; font-size:.88rem; margin-bottom:1rem; }
     @media (max-width:900px) { .category-filter-list { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @media (max-width:480px) { .shop-categories { margin-top:1.25rem; } .category-filter-list { grid-template-columns:1fr; gap:.55rem; } .category-filter { padding:.7rem .8rem; font-size:.88rem; } .category-hint { margin-bottom:.75rem; } }
+
+    .hero-slider-dots { display:flex; justify-content:center; align-items:center; gap:.55rem; margin:1.15rem auto 0; }
+    .hero-slider-dots[hidden] { display:none; }
+    .hero-slider-dot { width:9px; height:9px; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.45); cursor:pointer; transition:width .2s ease,background .2s ease; }
+    .hero-slider-dot[aria-current="true"] { width:25px; border-radius:20px; background:var(--primary,#f85606); }
+    .hero-content, .hero-visual { transition:opacity .35s ease; }
+    .hero-section.is-transitioning .hero-content, .hero-section.is-transitioning .hero-visual { opacity:.18; }
+    .category-heading-actions { display:flex; align-items:center; gap:.65rem; margin-bottom:1rem; }
+    .category-heading-actions .category-hint { margin:0; }
+    .category-menu-wrap { position:relative; }
+    .category-menu-toggle { width:36px; height:36px; display:grid; place-items:center; border:1px solid #e2e8f0; border-radius:8px; background:#fff; color:#334155; cursor:pointer; }
+    .category-menu-toggle:hover, .category-menu-toggle[aria-expanded="true"] { border-color:#fdba74; color:#ea580c; }
+    .category-dropdown { position:absolute; z-index:30; top:calc(100% + 7px); right:0; min-width:190px; padding:.35rem; background:#fff; border:1px solid #e2e8f0; border-radius:9px; box-shadow:0 10px 25px rgba(15,23,42,.12); }
+    .category-dropdown[hidden] { display:none; }
+    .category-menu-item { width:100%; display:flex; align-items:center; gap:.65rem; padding:.65rem .75rem; border:0; border-radius:6px; background:transparent; color:#334155; text-decoration:none; font:inherit; font-size:.88rem; text-align:left; cursor:pointer; }
+    .category-menu-item[hidden] { display:none; }
+    .category-menu-item:hover { background:#fff7ed; color:#c2410c; }
+    .category-menu-item i { width:1rem; color:#ea580c; }
   </style>
 
   <!-- Product Details Modal with Star Rating -->
@@ -269,27 +299,68 @@
       `;
     }
 
-    // 1. Sync Banner from admin/banner.html
-    function applyHeroBanner(banner) {
-      if (!banner || typeof banner !== "object") banner = defaultBanner;
-      if (banner.tag) {
-        document.getElementById("hero-tag").innerHTML = `<i class="fa-solid fa-bolt"></i> ${banner.tag}`;
-      }
-      if (banner.title) {
-        document.getElementById("hero-title").innerHTML = banner.title;
-      }
-      if (banner.subtitle) {
-        document.getElementById("hero-subtitle").textContent = banner.subtitle;
-      }
-      if (banner.imageUrl) {
-        document.getElementById("hero-image").src = banner.imageUrl;
-      }
-      if (banner.ctaText) {
-        document.getElementById("hero-cta-btn").innerHTML = `<i class="fa-solid fa-bag-shopping"></i> ${banner.ctaText}`;
-      }
-      if (banner.ctaLink) {
-        document.getElementById("hero-cta-btn").href = banner.ctaLink;
-      }
+    // Multi-banner slider with backward compatibility for the original single banner.
+    const heroSection = document.getElementById("hero-banner-section");
+    const heroDots = document.getElementById("hero-slider-dots");
+    const heroElements = {
+      tag: document.getElementById("hero-tag"),
+      title: document.getElementById("hero-title"),
+      subtitle: document.getElementById("hero-subtitle"),
+      image: document.getElementById("hero-image"),
+      cta: document.getElementById("hero-cta-btn")
+    };
+    let heroBanners = [defaultBanner], activeHeroIndex = 0, heroTimer = null, heroTransitionTimer = null;
+
+    function normalizeHeroBanners(data) {
+      const source = Array.isArray(data?.banners) && data.banners.length
+        ? data.banners
+        : [data && (data.imageUrl || data.title || data.subtitle) ? data : defaultBanner];
+      const valid = source.filter(item => item && typeof item === "object" && (item.imageUrl || item.title));
+      return (valid.length ? valid : [defaultBanner]).map(item => ({ ...defaultBanner, ...item }));
+    }
+    function paintHeroSlide(banner) {
+      heroElements.tag.innerHTML = `<i class="fa-solid fa-bolt"></i> ${banner.tag || defaultBanner.tag}`;
+      heroElements.title.innerHTML = banner.title || defaultBanner.title;
+      heroElements.subtitle.textContent = banner.subtitle || defaultBanner.subtitle;
+      heroElements.image.src = banner.imageUrl || defaultBanner.imageUrl;
+      heroElements.image.alt = banner.imageAlt || "BazarGo promotional banner";
+      heroElements.cta.innerHTML = `<i class="fa-solid fa-bag-shopping"></i> ${banner.ctaText || defaultBanner.ctaText}`;
+      heroElements.cta.href = banner.ctaLink || defaultBanner.ctaLink;
+    }
+    function renderHeroDots() {
+      heroDots.innerHTML = "";
+      heroDots.hidden = heroBanners.length <= 1;
+      if (heroBanners.length <= 1) return;
+      heroBanners.forEach((_, index) => {
+        const dot = document.createElement("button");
+        dot.type = "button"; dot.className = "hero-slider-dot";
+        dot.setAttribute("aria-label", `Show banner ${index + 1}`);
+        dot.setAttribute("aria-current", String(index === activeHeroIndex));
+        dot.addEventListener("click", () => { renderHeroSlide(index); restartHeroTimer(); });
+        heroDots.appendChild(dot);
+      });
+    }
+    function renderHeroSlide(index, animate = true) {
+      activeHeroIndex = (index + heroBanners.length) % heroBanners.length;
+      clearTimeout(heroTransitionTimer);
+      if (animate) {
+        heroSection.classList.add("is-transitioning");
+        heroTransitionTimer = setTimeout(() => {
+          paintHeroSlide(heroBanners[activeHeroIndex]);
+          heroSection.classList.remove("is-transitioning");
+        }, 180);
+      } else paintHeroSlide(heroBanners[activeHeroIndex]);
+      renderHeroDots();
+    }
+    function restartHeroTimer() {
+      clearInterval(heroTimer);
+      if (heroBanners.length > 1) heroTimer = setInterval(() => renderHeroSlide(activeHeroIndex + 1), 4500);
+    }
+    function applyHeroBanners(data) {
+      heroBanners = normalizeHeroBanners(data);
+      activeHeroIndex = Math.min(activeHeroIndex, heroBanners.length - 1);
+      renderHeroSlide(activeHeroIndex, false);
+      restartHeroTimer();
     }
 
     // 2. Authentication State Handling
@@ -298,6 +369,8 @@
         const authSlot = document.getElementById("auth-nav-slot");
         const customerSection = document.getElementById("customer-profile-section");
 
+        const manageCategoriesLink = document.getElementById("manage-categories-link");
+        if (manageCategoriesLink) manageCategoriesLink.hidden = profile?.role !== "admin";
         if (user) {
           const name = profile?.fullName || user.email?.split('@')[0] || "Customer";
           authSlot.innerHTML = `
@@ -358,16 +431,42 @@
     function listenForHeroBanner() {
       if (bannerUnsubscribe) bannerUnsubscribe();
       bannerUnsubscribe = onSnapshot(doc(db, "store_settings", "heroBanner"), (snapshot) => {
-        applyHeroBanner(snapshot.exists() ? snapshot.data() : defaultBanner);
+        applyHeroBanners(snapshot.exists() ? snapshot.data() : defaultBanner);
       }, (error) => {
         console.error("Live banner sync failed:", error);
-        applyHeroBanner(defaultBanner);
+        applyHeroBanners(defaultBanner);
       });
     }
     window.addEventListener("beforeunload", () => {
       if (productsUnsubscribe) productsUnsubscribe();
       if (bannerUnsubscribe) bannerUnsubscribe();
     });
+
+    // Category menu interactions.
+    const categoryMenuToggle = document.getElementById("category-menu-toggle");
+    const categoryDropdown = document.getElementById("category-dropdown");
+    const categoryMenuWrap = document.getElementById("category-menu-wrap");
+    function closeCategoryMenu() {
+      categoryDropdown.hidden = true;
+      categoryMenuToggle.setAttribute("aria-expanded", "false");
+    }
+    categoryMenuToggle.addEventListener("click", event => {
+      event.stopPropagation();
+      const open = categoryDropdown.hidden;
+      categoryDropdown.hidden = !open;
+      categoryMenuToggle.setAttribute("aria-expanded", String(open));
+    });
+    document.addEventListener("click", event => {
+      if (!categoryMenuWrap.contains(event.target)) closeCategoryMenu();
+    });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") closeCategoryMenu(); });
+    document.getElementById("view-all-categories").addEventListener("click", () => {
+      const allButton = document.querySelector('.category-filter[data-category="all"]');
+      if (allButton) allButton.click();
+      document.getElementById("category-filter-list").scrollIntoView({ behavior: "smooth", block: "center" });
+      closeCategoryMenu();
+    });
+    document.getElementById("manage-categories-link").addEventListener("click", closeCategoryMenu);
 
     // 4. Render Product Cards with Stock Awareness
     function renderProducts(list) {
