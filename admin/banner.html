@@ -52,6 +52,13 @@
           Any changes saved here will immediately update the promotional hero section on the customer homepage.
         </p>
 
+        <div class="banner-slide-toolbar" style="max-width:650px; display:flex; gap:.65rem; align-items:center; flex-wrap:wrap; margin-bottom:1rem;">
+          <label for="banner-slide-select">Banner slide</label>
+          <select id="banner-slide-select" style="min-width:180px; padding:.6rem; border:1px solid var(--border); border-radius:6px;"></select>
+          <button type="button" class="btn-save" id="add-banner-slide" style="padding:.6rem 1rem;"> <i class="fa-solid fa-plus"></i> Add Slide</button>
+          <button type="button" id="delete-banner-slide" style="padding:.6rem 1rem; border:1px solid #fecaca; color:#b91c1c; background:#fff; border-radius:6px; cursor:pointer;"> <i class="fa-solid fa-trash"></i> Delete Slide</button>
+        </div>
+        <p style="max-width:650px; color:#64748b; font-size:.82rem; margin:-.45rem 0 1rem;">Add multiple slides here. The storefront automatically rotates through saved slides every 4.5 seconds.</p>
         <form id="hero-banner-admin-form" style="max-width: 650px;">
           <div class="form-group">
             <label for="banner-tag-input">Top Discount Pill / Tag</label>
@@ -105,73 +112,114 @@
 
   <script type="module">
     import { db } from "../assets/js/firebase-config.js";
-    import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    import { doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
     import { requireAdminGuard } from "../assets/js/auth.js";
     requireAdminGuard();
+
     const BANNER_STORAGE_KEY = "bazargo_hero_banner";
     const bannerRef = doc(db, "store_settings", "heroBanner");
-
     const defaultBanner = {
       tag: "Mega Sale • Up to 50% Off",
       title: "Smart Online Shopping at <span class='highlight'>BazarGo</span>",
       subtitle: "Discover millions of premium electronics, everyday essentials, and fashion trends delivered straight to your door at unbeatable prices.",
-      imageUrl: "assets/images/sample1.jpg",
-      ctaText: "Shop Now",
-      ctaLink: "#featured"
+      imageUrl: "assets/images/sample1.jpg", ctaText: "Shop Now", ctaLink: "#featured"
     };
+    const fields = {
+      tag: document.getElementById("banner-tag-input"),
+      title: document.getElementById("banner-heading-input"),
+      subtitle: document.getElementById("banner-subtext-input"),
+      imageUrl: document.getElementById("banner-image-input"),
+      ctaText: document.getElementById("banner-cta-text"),
+      ctaLink: document.getElementById("banner-cta-link")
+    };
+    const slideSelect = document.getElementById("banner-slide-select");
+    let banners = [{ ...defaultBanner }], activeIndex = 0, loadingRemote = true;
 
+    function readForm() {
+      return Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value.trim()]));
+    }
+    function fillForm(banner = defaultBanner) {
+      Object.entries(fields).forEach(([key, field]) => { field.value = banner[key] || defaultBanner[key] || ""; });
+      updatePreview(banner.imageUrl || defaultBanner.imageUrl);
+    }
     function updatePreview(url) {
-      const previewImg = document.getElementById("banner-preview");
       if (!url) return;
-      const normalized = url.startsWith("http") || url.startsWith("../") ? url : `../${url}`;
-      previewImg.src = normalized;
+      document.getElementById("banner-preview").src =
+        url.startsWith("http") || url.startsWith("../") ? url : `../${url}`;
+    }
+    function refreshSlideSelect() {
+      slideSelect.innerHTML = "";
+      banners.forEach((banner, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = `Slide ${index + 1}${banner.tag ? ` — ${banner.tag}` : ""}`;
+        slideSelect.appendChild(option);
+      });
+      slideSelect.value = String(activeIndex);
+      document.getElementById("delete-banner-slide").disabled = banners.length <= 1;
+      document.getElementById("delete-banner-slide").style.opacity = banners.length <= 1 ? ".5" : "1";
+    }
+    function selectSlide(index) {
+      activeIndex = Math.max(0, Math.min(index, banners.length - 1));
+      refreshSlideSelect();
+      fillForm(banners[activeIndex]);
+    }
+    function normalizeImagePath(value) {
+      return value.startsWith("../") ? value.replace(/^\.\.\//, "") : value;
     }
 
-    function fillBannerForm(data) {
-      document.getElementById("banner-tag-input").value = data.tag || defaultBanner.tag;
-      document.getElementById("banner-heading-input").value = data.title || defaultBanner.title;
-      document.getElementById("banner-subtext-input").value = data.subtitle || defaultBanner.subtitle;
-      document.getElementById("banner-image-input").value = data.imageUrl || defaultBanner.imageUrl;
-      document.getElementById("banner-cta-text").value = data.ctaText || defaultBanner.ctaText;
-      document.getElementById("banner-cta-link").value = data.ctaLink || defaultBanner.ctaLink;
-
-      updatePreview(data.imageUrl || defaultBanner.imageUrl);
-    }
-
-    document.getElementById("banner-image-input").addEventListener("input", (e) => {
-      updatePreview(e.target.value.trim());
+    document.getElementById("banner-image-input").addEventListener("input", event => updatePreview(event.target.value.trim()));
+    slideSelect.addEventListener("change", () => {
+      banners[activeIndex] = { ...banners[activeIndex], ...readForm() };
+      selectSlide(Number(slideSelect.value));
+    });
+    document.getElementById("add-banner-slide").addEventListener("click", () => {
+      banners[activeIndex] = { ...banners[activeIndex], ...readForm() };
+      banners.push({ ...defaultBanner, tag: `Promotion ${banners.length + 1}` });
+      selectSlide(banners.length - 1);
+    });
+    document.getElementById("delete-banner-slide").addEventListener("click", () => {
+      if (banners.length <= 1) return;
+      if (!confirm("Delete this banner slide?")) return;
+      banners.splice(activeIndex, 1);
+      selectSlide(Math.min(activeIndex, banners.length - 1));
     });
 
-    document.getElementById("hero-banner-admin-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      let imgVal = document.getElementById("banner-image-input").value.trim();
-      if (imgVal.startsWith("../")) {
-        imgVal = imgVal.replace("../", "");
-      }
-
-      const bannerData = {
-        tag: document.getElementById("banner-tag-input").value.trim() || defaultBanner.tag,
-        title: document.getElementById("banner-heading-input").value.trim(),
-        subtitle: document.getElementById("banner-subtext-input").value.trim(),
-        imageUrl: imgVal || defaultBanner.imageUrl,
-        ctaText: document.getElementById("banner-cta-text").value.trim() || "Shop Now",
-        ctaLink: document.getElementById("banner-cta-link").value.trim() || "#featured"
-      };
-
+    document.getElementById("hero-banner-admin-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const current = { ...defaultBanner, ...readForm() };
+      current.imageUrl = normalizeImagePath(current.imageUrl);
+      banners[activeIndex] = current;
+      const cleanedBanners = banners.map(banner => ({ ...defaultBanner, ...banner, imageUrl: normalizeImagePath(banner.imageUrl || defaultBanner.imageUrl) }));
       try {
-        await setDoc(bannerRef, { ...bannerData, updatedAt: serverTimestamp() }, { merge: true });
-        localStorage.setItem(BANNER_STORAGE_KEY, JSON.stringify(bannerData));
-        alert("Hero banner saved. All connected devices will update automatically.");
+        await setDoc(bannerRef, {
+          banners: cleanedBanners,
+          ...cleanedBanners[0],
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        localStorage.setItem(BANNER_STORAGE_KEY, JSON.stringify(cleanedBanners[0]));
+        banners = cleanedBanners;
+        refreshSlideSelect();
+        alert("All banner slides saved. The storefront will update automatically.");
       } catch (error) {
-        console.error("Failed to save hero banner:", error);
-        alert("Could not save the banner to Firebase. Check your internet connection and Firestore permissions.");
+        console.error("Failed to save banner slides:", error);
+        alert("Could not save banners to Firebase. Check your connection and Firestore permissions.");
       }
     });
 
-    onSnapshot(bannerRef, (snapshot) => fillBannerForm(snapshot.exists() ? snapshot.data() : defaultBanner), (error) => {
+    onSnapshot(bannerRef, snapshot => {
+      if (!loadingRemote) return;
+      const data = snapshot.exists() ? snapshot.data() : defaultBanner;
+      banners = Array.isArray(data.banners) && data.banners.length
+        ? data.banners.map(item => ({ ...defaultBanner, ...item }))
+        : [{ ...defaultBanner, ...data }];
+      loadingRemote = false;
+      selectSlide(0);
+    }, error => {
       console.error("Could not load live banner settings:", error);
-      fillBannerForm(defaultBanner);
+      loadingRemote = false;
+      banners = [{ ...defaultBanner }];
+      selectSlide(0);
     });
   </script>
 </body>
